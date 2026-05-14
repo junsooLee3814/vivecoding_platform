@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vibe Coding Manual</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+:root {
+  --bg-page: #0d1f0d;
+  --bg-nav: #1a1a1a;
+  --bg-sidebar: #162016;
+  --bg-card: #1e351e;
+  --accent: #f5c518;
+  --text-1: #e8f5e8;
+  --text-2: #b0ccb0;
+  --text-3: #7a9e7a;
+  --border: #2d4a2d;
+  --claude: #d97706;
+  --github: #e0e0e0;
+  --supabase: #3ecf8e;
+  --vercel: #cccccc;
+  --vscode: #007acc;
+  --sw: 260px;
+  --nh: 60px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg-page);color:var(--text-1);min-height:100vh}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;height:var(--nh);background:var(--bg-nav);display:flex;align-items:center;padding:0 16px;z-index:1000;border-bottom:1px solid #252525;gap:8px}
+.nav-logo{font-size:15px;font-weight:700;color:var(--accent);cursor:pointer;white-space:nowrap;flex-shrink:0}
+.nav-tabs{display:flex;align-items:center;gap:2px;flex:1;flex-wrap:nowrap;overflow:hidden}
+.nav-tab{padding:5px 12px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:500;color:#999;transition:all .2s;border:none;background:transparent;white-space:nowrap;flex-shrink:0}
+.nav-tab:hover{color:#fff;background:#2a2a2a}
+.nav-tab.active{color:#fff;background:#333}
+.nav-sep{flex:1;min-width:8px}
+.nav-tab.manual{color:var(--accent);border:1px solid var(--accent)}
+.nav-tab.manual:hover,.nav-tab.manual.active{background:var(--accent);color:#000}
+.hamburger{display:none;cursor:pointer;font-size:20px;color:#aaa;margin-left:auto;flex-shrink:0}
+
+/* SIDEBAR */
+.sidebar{position:fixed;left:0;top:var(--nh);width:var(--sw);height:calc(100vh - var(--nh));background:var(--bg-sidebar);overflow-y:auto;border-right:1px solid var(--border);z-index:900;padding-bottom:24px}
+.sb-logo{font-size:14px;font-weight:700;color:var(--accent);cursor:pointer;padding:16px 20px;border-bottom:1px solid var(--border);display:block}
+.sb-cat{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:14px 20px 4px;display:block}
+.sb-item{padding:8px 20px 8px 30px;font-size:13px;color:var(--text-2);cursor:pointer;transition:all .2s;border-left:2px solid transparent;display:block}
+.sb-item:hover{color:var(--text-1);background:rgba(255,255,255,.04)}
+.sb-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(245,197,24,.07)}
+
+/* MAIN */
+.main{margin-left:var(--sw);margin-top:var(--nh);min-height:calc(100vh - var(--nh));padding:40px 48px}
+
+/* SECTIONS */
+.sec{display:none;animation:fi .25s ease}
+.sec.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* HOME */
+.hero{text-align:center;padding:56px 0 36px}
+.hero h1{font-size:40px;font-weight:700;color:var(--text-1);margin-bottom:14px;line-height:1.2}
+.hero-sub{font-size:19px;font-weight:700;color:var(--accent);margin-bottom:10px}
+.hero-desc{font-size:14px;color:var(--text-2);max-width:560px;margin:0 auto;line-height:1.7}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:16px;margin:36px 0}
+.tool-card{background:var(--bg-card);border-radius:10px;padding:22px;cursor:pointer;transition:all .2s;border:1px solid var(--border);border-top:3px solid var(--tc, var(--border))}
+.tool-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.tc-icon{font-size:26px;margin-bottom:10px}
+.tool-card h3{font-size:15px;font-weight:600;margin-bottom:6px}
+.tool-card p{font-size:12px;color:var(--text-2);line-height:1.5}
+
+/* TIMELINE */
+.tl{max-width:680px;margin:0 auto}
+.tl-title{font-size:20px;font-weight:700;text-align:center;margin-bottom:28px;color:var(--accent)}
+.tl-item{display:flex;gap:18px;margin-bottom:26px;position:relative}
+.tl-item::before{content:'';position:absolute;left:22px;top:44px;width:2px;height:calc(100% + 6px);background:var(--border)}
+.tl-item:last-child::before{display:none}
+.tl-dot{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;border:2px solid}
+.tl-body{flex:1}
+.tl-body h4{font-size:15px;font-weight:600;margin-bottom:5px}
+.tl-body p{font-size:12px;color:var(--text-2);margin-bottom:8px}
+
+/* CMD LINE */
+.cmd{display:flex;align-items:center;gap:8px;background:#080f08;border:1px solid #1e321e;border-radius:6px;padding:7px 12px;margin-bottom:5px}
+.cmd code{flex:1;font-family:'JetBrains Mono',monospace;font-size:12px;color:#7fdb7f}
+.copy-btn{background:#1e2e1e;border:1px solid #3a4a3a;border-radius:4px;padding:3px 9px;font-size:11px;color:#8ab88a;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.copy-btn:hover{background:#2a3e2a;color:#b8d8b8}
+.copy-btn.copied{background:#0a2a0a;color:#4caf50;border-color:#4caf50}
+
+/* PAGE HEADER */
+.ph{border-bottom:1px solid var(--border);padding-bottom:18px;margin-bottom:28px}
+.ph h1{font-size:26px;font-weight:700;margin-bottom:6px}
+.ph p{font-size:14px;color:var(--text-2)}
+
+/* CONTENT */
+.cs{margin-bottom:36px}
+.cs h2{font-size:18px;font-weight:600;margin-bottom:14px;color:var(--accent)}
+.cs h3{font-size:15px;font-weight:600;margin:18px 0 8px;color:var(--text-1)}
+.cs p{font-size:14px;color:var(--text-2);line-height:1.8;margin-bottom:10px}
+.cs ul,.cs ol{padding-left:20px;margin-bottom:10px}
+.cs li{font-size:14px;color:var(--text-2);line-height:1.8;margin-bottom:3px}
+
+/* CODE BLOCK */
+.cb{background:#060e06;border:1px solid #1e2e1e;border-radius:8px;padding:16px;margin:10px 0;position:relative}
+.cb pre{font-family:'JetBrains Mono',monospace;font-size:12px;color:#7fdb7f;overflow-x:auto;line-height:1.65;white-space:pre-wrap;word-break:break-all}
+.cb .copy-btn{position:absolute;top:10px;right:10px}
+
+/* BOXES */
+.info{background:rgba(245,197,24,.07);border:1px solid rgba(245,197,24,.25);border-radius:7px;padding:14px;margin:12px 0}
+.info p{color:var(--text-2);margin:0;font-size:13px}
+.info strong{color:var(--accent)}
+.tip{background:rgba(62,207,142,.07);border:1px solid rgba(62,207,142,.25);border-radius:7px;padding:14px;margin:12px 0}
+.tip p{color:var(--text-2);margin:0;font-size:13px}
+.tip strong{color:var(--supabase)}
+
+/* FEATURE GRID */
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:14px 0}
+.fc{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:14px}
+.fc h4{font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text-1)}
+.fc p{font-size:12px;color:var(--text-2);margin:0;line-height:1.6}
+
+/* TABLE */
+.tw{overflow-x:auto;margin:12px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--bg-card);color:var(--accent);font-weight:600;padding:9px 13px;text-align:left;border:1px solid var(--border)}
+td{padding:7px 13px;border:1px solid var(--border);color:var(--text-2)}
+tr:nth-child(even){background:rgba(255,255,255,.015)}
+td code{font-family:'JetBrains Mono',monospace;font-size:11px;color:#9fd89f;background:#0a140a;padding:1px 5px;border-radius:3px}
+
+/* FAQ */
+.faq-item{border:1px solid var(--border);border-radius:7px;margin-bottom:8px;overflow:hidden}
+.faq-q{padding:13px 16px;cursor:pointer;font-size:13px;font-weight:500;display:flex;justify-content:space-between;align-items:center;background:var(--bg-card);transition:background .2s;color:var(--text-1)}
+.faq-q:hover{background:#243424}
+.faq-a{padding:0 16px;max-height:0;overflow:hidden;transition:all .3s;font-size:13px;color:var(--text-2);line-height:1.7}
+.faq-item.open .faq-a{padding:13px 16px;max-height:200px}
+.faq-icon{transition:transform .3s;color:var(--text-3)}
+.faq-item.open .faq-icon{transform:rotate(180deg)}
+
+/* FOOTER */
+footer{margin-left:var(--sw);background:var(--bg-nav);border-top:1px solid #252525;padding:40px 48px}
+.fg3{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;max-width:900px}
+.fc3 h4{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.fc3 p,.fc3 li{font-size:13px;color:#777;line-height:1.8}
+.fc3 ul{list-style:none}
+.fc3 a{color:#777;text-decoration:none;transition:color .2s}
+.fc3 a:hover{color:#bbb}
+.footer-bot{margin-top:28px;padding-top:16px;border-top:1px solid #252525;font-size:12px;color:#444}
+
+/* AUTH NAV */
+#nav-auth{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:6px}
+#user-info{display:none;align-items:center;gap:8px}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#000;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+#user-email-text{font-size:12px;color:#bbb;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.auth-nav-btn{padding:5px 14px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;border:none;transition:all .2s;white-space:nowrap}
+.btn-login{background:var(--accent);color:#000}
+.btn-login:hover{background:#e6b800}
+.btn-logout{background:transparent;color:#888;border:1px solid #444!important;border:none}
+.btn-logout:hover{color:#ccc;border-color:#666!important}
+
+/* MODAL OVERLAY */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:3000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.modal-box{background:#1a2a1a;border:1px solid var(--border);border-radius:14px;padding:32px 28px;width:380px;max-width:calc(100vw - 32px);position:relative;box-shadow:0 24px 64px rgba(0,0,0,.5)}
+.modal-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:22px;color:#666;cursor:pointer;line-height:1;padding:2px 6px}
+.modal-close:hover{color:#ccc}
+.modal-brand{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:20px}
+.modal-tabs{display:flex;border-radius:8px;overflow:hidden;border:1px solid var(--border);margin-bottom:22px}
+.modal-tab{flex:1;padding:9px;background:#162016;color:#888;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .2s}
+.modal-tab.active{background:var(--accent);color:#000}
+.form-g{margin-bottom:14px}
+.form-g label{display:block;font-size:12px;color:#aaa;margin-bottom:5px;font-weight:500}
+.form-g input{width:100%;padding:9px 12px;background:#0a160a;border:1px solid var(--border);border-radius:7px;color:var(--text-1);font-size:13px;outline:none;transition:border .2s;font-family:inherit}
+.form-g input:focus{border-color:var(--accent)}
+.form-g input::placeholder{color:#3a5a3a}
+.auth-submit{width:100%;padding:10px;background:var(--accent);color:#000;font-size:13px;font-weight:700;border:none;border-radius:7px;cursor:pointer;transition:all .2s;margin-top:4px}
+.auth-submit:hover{background:#e6b800}
+.auth-submit:disabled{background:#2a3a2a;color:#5a7a5a;cursor:not-allowed}
+.auth-divider{text-align:center;margin:16px 0;position:relative}
+.auth-divider::before{content:'';position:absolute;left:0;top:50%;width:100%;height:1px;background:var(--border)}
+.auth-divider span{background:#1a2a1a;padding:0 10px;font-size:11px;color:#555;position:relative}
+.social-btn{width:100%;padding:9px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;border:1px solid var(--border);background:#162016;color:var(--text-2);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px}
+.social-btn:hover{background:#1e2e1e;color:var(--text-1);border-color:#4a6a4a}
+.social-btn i{font-size:15px}
+.auth-msg{border-radius:7px;padding:10px 12px;font-size:12px;margin-bottom:14px;line-height:1.5}
+.auth-msg.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#f87272}
+.auth-msg.success{background:rgba(62,207,142,.1);border:1px solid rgba(62,207,142,.3);color:var(--supabase)}
+.auth-msg.info{background:rgba(245,197,24,.08);border:1px solid rgba(245,197,24,.25);color:var(--accent)}
+.modal-note{font-size:11px;color:#444;text-align:center;margin-top:14px;line-height:1.5}
+.modal-note a{color:#666;text-decoration:underline}
+
+/* CONFIG PANEL */
+.config-panel{background:#0d1a0d;border:1px solid #2a3e2a;border-radius:8px;padding:14px;margin-bottom:18px}
+.config-panel p{font-size:12px;color:#888;margin:0 0 10px}
+.config-panel input{width:100%;padding:7px 10px;background:#0a130a;border:1px solid var(--border);border-radius:5px;color:var(--text-1);font-size:11px;font-family:'JetBrains Mono',monospace;outline:none;margin-bottom:6px}
+.config-panel input:focus{border-color:var(--accent)}
+.config-save{padding:5px 12px;background:var(--accent);color:#000;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .main{padding:24px 20px}
+  footer{padding:28px 20px}
+}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);transition:transform .3s}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0;padding:20px 16px}
+  footer{margin-left:0;padding:24px 16px}
+  .hamburger{display:block}
+  .nav-logo{font-size:13px}
+  .nav-tabs{overflow-x:auto}
+  .hero h1{font-size:26px}
+  .cards{grid-template-columns:1fr 1fr}
+  .fg3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="goHome()">Vibe Coding Manual</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-tab="home" onclick="switchTab('home',this)">Home</button>
+    <button class="nav-tab" data-tab="claude" onclick="switchTab('claude',this)">Claude</button>
+    <button class="nav-tab" data-tab="github" onclick="switchTab('github',this)">GitHub</button>
+    <button class="nav-tab" data-tab="supabase" onclick="switchTab('supabase',this)">Supabase</button>
+    <button class="nav-tab" data-tab="vercel" onclick="switchTab('vercel',this)">Vercel</button>
+    <button class="nav-tab" data-tab="vscode" onclick="switchTab('vscode',this)">VS Code</button>
+    <div class="nav-sep"></div>
+    <button class="nav-tab manual" data-tab="manual" onclick="switchTab('manual',this)">사용자매뉴얼</button>
+  </div>
+  <div class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+  <div id="nav-auth">
+    <div id="user-info">
+      <div class="user-avatar" id="user-avatar-letter">U</div>
+      <span id="user-email-text"></span>
+      <button class="auth-nav-btn btn-logout" onclick="doSignOut()">로그아웃</button>
+    </div>
+    <button id="login-btn" class="auth-nav-btn btn-login" onclick="openModal()">로그인</button>
+  </div>
+</nav>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo" onclick="goHome()">Vibe Coding Manual</div>
+
+  <div id="sb-home">
+    <span class="sb-cat" style="color:var(--accent)">메뉴</span>
+    <div class="sb-item active" onclick="showPage('home-main')">홈</div>
+  </div>
+
+  <div id="sb-claude" style="display:none">
+    <span class="sb-cat" style="color:var(--claude)">Claude</span>
+    <div class="sb-item" onclick="showPage('c-intro')">소개</div>
+    <div class="sb-item" onclick="showPage('c-install')">설치방법</div>
+    <div class="sb-item" onclick="showPage('c-basic')">기본사용법</div>
+    <div class="sb-item" onclick="showPage('c-adv')">고급기능</div>
+    <div class="sb-item" onclick="showPage('c-prompt')">프롬프트 엔지니어링</div>
+    <div class="sb-item" onclick="showPage('c-token')">토큰 절감방안</div>
+    <div class="sb-item" onclick="showPage('c-anthropic')">Anthropic 이야기</div>
+  </div>
+
+  <div id="sb-github" style="display:none">
+    <span class="sb-cat" style="color:var(--github)">GitHub</span>
+    <div class="sb-item" onclick="showPage('gh-intro')">소개</div>
+    <div class="sb-item" onclick="showPage('gh-install')">설치방법</div>
+    <div class="sb-item" onclick="showPage('gh-basic')">기본사용법</div>
+    <div class="sb-item" onclick="showPage('gh-collab')">협업 워크플로우</div>
+    <div class="sb-item" onclick="showPage('gh-flow')">GitHub Flow</div>
+    <div class="sb-item" onclick="showPage('gh-md')">마크다운 문법</div>
+    <div class="sb-item" onclick="showPage('gh-actions')">GitHub Actions</div>
+  </div>
+
+  <div id="sb-supabase" style="display:none">
+    <span class="sb-cat" style="color:var(--supabase)">Supabase</span>
+    <div class="sb-item" onclick="showPage('sb-intro')">소개</div>
+    <div class="sb-item" onclick="showPage('sb-install')">설치방법</div>
+    <div class="sb-item" onclick="showPage('sb-db')">데이터베이스</div>
+    <div class="sb-item" onclick="showPage('sb-auth')">인증</div>
+    <div class="sb-item" onclick="showPage('sb-api')">API</div>
+    <div class="sb-item" onclick="showPage('sb-storage')">스토리지</div>
+    <div class="sb-item" onclick="showPage('sb-rls')">RLS &amp; 보안</div>
+    <div class="sb-item" onclick="showPage('sb-vector')">벡터DB &amp; AI</div>
+  </div>
+
+  <div id="sb-vercel" style="display:none">
+    <span class="sb-cat" style="color:#aaa">Vercel</span>
+    <div class="sb-item" onclick="showPage('vc-intro')">소개</div>
+    <div class="sb-item" onclick="showPage('vc-install')">설치방법</div>
+    <div class="sb-item" onclick="showPage('vc-deploy')">배포방법</div>
+    <div class="sb-item" onclick="showPage('vc-domain')">도메인 설정</div>
+    <div class="sb-item" onclick="showPage('vc-env')">환경변수</div>
+  </div>
+
+  <div id="sb-vscode" style="display:none">
+    <span class="sb-cat" style="color:var(--vscode)">VS Code</span>
+    <div class="sb-item" onclick="showPage('vs-intro')">소개</div>
+    <div class="sb-item" onclick="showPage('vs-install')">설치방법</div>
+    <div class="sb-item" onclick="showPage('vs-basic')">기본사용법</div>
+    <div class="sb-item" onclick="showPage('vs-ext')">확장프로그램</div>
+    <div class="sb-item" onclick="showPage('vs-keys')">단축키</div>
+  </div>
+
+  <div id="sb-manual" style="display:none">
+    <span class="sb-cat" style="color:var(--accent)">사용자매뉴얼</span>
+    <div class="sb-item" onclick="showPage('m-start')">시작하기</div>
+    <div class="sb-item" onclick="showPage('m-layout')">화면구성</div>
+    <div class="sb-item" onclick="showPage('m-feat')">주요기능</div>
+    <div class="sb-item" onclick="showPage('m-faq')">자주 묻는 질문</div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- ==================== HOME ==================== -->
+<div class="sec active" id="sec-home">
+<div id="home-main">
+  <div class="hero">
+    <h1>바이브코딩 완벽 매뉴얼</h1>
+    <div class="hero-sub">Claude · GitHub · Supabase · Vercel · VS Code</div>
+    <p class="hero-desc">현대 개발자를 위한 5가지 핵심 도구의 완벽한 사용 가이드. 설치부터 고급 활용까지 한 곳에서 확인하세요.</p>
+  </div>
+
+  <div class="cards">
+    <div class="tool-card" style="--tc:var(--claude)" onclick="switchTab('claude',null)">
+      <div class="tc-icon" style="color:var(--claude)"><i class="fas fa-robot"></i></div>
+      <h3>Claude</h3>
+      <p>Anthropic의 AI 어시스턴트. 코딩, 글쓰기, 분석 등 다양한 작업을 도와주는 강력한 AI 도구입니다.</p>
+    </div>
+    <div class="tool-card" style="--tc:var(--github)" onclick="switchTab('github',null)">
+      <div class="tc-icon" style="color:var(--github)"><i class="fab fa-github"></i></div>
+      <h3>GitHub</h3>
+      <p>세계 최대의 코드 호스팅 플랫폼. 버전 관리, 협업, CI/CD를 위한 필수 개발 도구입니다.</p>
+    </div>
+    <div class="tool-card" style="--tc:var(--supabase)" onclick="switchTab('supabase',null)">
+      <div class="tc-icon" style="color:var(--supabase)"><i class="fas fa-database"></i></div>
+      <h3>Supabase</h3>
+      <p>오픈소스 Firebase 대안. PostgreSQL 기반의 백엔드 서비스로 인증, DB, 스토리지를 제공합니다.</p>
+    </div>
+    <div class="tool-card" style="--tc:#888" onclick="switchTab('vercel',null)">
+      <div class="tc-icon" style="color:#bbb"><i class="fas fa-rocket"></i></div>
+      <h3>Vercel</h3>
+      <p>프론트엔드 배포의 표준. GitHub 연동 자동 배포, 전 세계 엣지 네트워크를 제공합니다.</p>
+    </div>
+    <div class="tool-card" style="--tc:var(--vscode)" onclick="switchTab('vscode',null)">
+      <div class="tc-icon" style="color:var(--vscode)"><i class="fas fa-code"></i></div>
+      <h3>VS Code</h3>
+      <p>Microsoft의 강력한 코드 에디터. 방대한 확장 프로그램과 AI 통합으로 생산성을 극대화합니다.</p>
+    </div>
+  </div>
+
+  <div class="tl">
+    <div class="tl-title">설치 순서 로드맵</div>
+    <div class="tl-item">
+      <div class="tl-dot" style="background:rgba(0,122,204,.12);color:var(--vscode);border-color:var(--vscode)">1</div>
+      <div class="tl-body">
+        <h4>VS Code 설치</h4>
+        <p>개발 환경의 기반이 되는 코드 에디터를 먼저 설치합니다.</p>
+        <div class="cmd"><code>winget install Microsoft.VisualStudioCode</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="background:rgba(255,255,255,.04);color:#bbb;border-color:#666">2</div>
+      <div class="tl-body">
+        <h4>Git &amp; GitHub 설정</h4>
+        <p>버전 관리 도구 Git을 설치하고 GitHub 계정과 연동합니다.</p>
+        <div class="cmd"><code>winget install Git.Git</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+        <div class="cmd"><code>git config --global user.name "Your Name"</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+        <div class="cmd"><code>git config --global user.email "you@example.com"</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="background:rgba(62,207,142,.12);color:var(--supabase);border-color:var(--supabase)">3</div>
+      <div class="tl-body">
+        <h4>Supabase 프로젝트 생성</h4>
+        <p>백엔드 서비스인 Supabase 프로젝트를 생성하고 CLI를 설치합니다.</p>
+        <div class="cmd"><code>npm install -g supabase</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+        <div class="cmd"><code>supabase login</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="background:rgba(200,200,200,.04);color:#bbb;border-color:#666">4</div>
+      <div class="tl-body">
+        <h4>Vercel 배포 설정</h4>
+        <p>프로덕션 배포를 위한 Vercel CLI를 설치하고 계정을 연동합니다.</p>
+        <div class="cmd"><code>npm install -g vercel</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+        <div class="cmd"><code>vercel login</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot" style="background:rgba(217,119,6,.12);color:var(--claude);border-color:var(--claude)">5</div>
+      <div class="tl-body">
+        <h4>Claude Code 설치</h4>
+        <p>AI 기반 코딩 어시스턴트 Claude Code를 설치하여 개발 생산성을 극대화합니다.</p>
+        <div class="cmd"><code>npm install -g @anthropic-ai/claude-code</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+        <div class="cmd"><code>claude</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ==================== CLAUDE ==================== -->
+<div class="sec" id="sec-claude">
+
+<div id="c-intro">
+  <div class="ph"><h1 style="color:var(--claude)"><i class="fas fa-robot"></i> Claude 소개</h1><p>Anthropic이 개발한 안전하고 강력한 AI 어시스턴트</p></div>
+  <div class="cs">
+    <h2>Claude란?</h2>
+    <p>Claude는 AI 안전 회사 Anthropic이 개발한 대형 언어 모델(LLM) 기반의 AI 어시스턴트입니다. 2023년 출시 이후 지속적인 업데이트를 통해 코딩, 분석, 창작, 대화 등 다양한 분야에서 탁월한 성능을 보여주고 있습니다.</p>
+    <div class="fg">
+      <div class="fc"><h4><i class="fas fa-shield-alt" style="color:var(--claude)"></i> 안전성 우선</h4><p>Constitutional AI 기법으로 안전하고 윤리적인 응답을 생성합니다.</p></div>
+      <div class="fc"><h4><i class="fas fa-code" style="color:var(--claude)"></i> 코딩 능력</h4><p>Python, JavaScript, TypeScript 등 다양한 언어의 코드를 작성하고 디버깅합니다.</p></div>
+      <div class="fc"><h4><i class="fas fa-brain" style="color:var(--claude)"></i> 긴 컨텍스트</h4><p>최대 200K 토큰의 컨텍스트 윈도우로 긴 문서를 처리합니다.</p></div>
+      <div class="fc"><h4><i class="fas fa-language" style="color:var(--claude)"></i> 다국어 지원</h4><p>한국어를 포함한 다양한 언어로 자연스러운 대화가 가능합니다.</p></div>
+    </div>
+  </div>
+  <div class="cs">
+    <h2>Claude 모델 라인업</h2>
+    <div class="tw"><table>
+      <thead><tr><th>모델</th><th>특징</th><th>적합한 용도</th></tr></thead>
+      <tbody>
+        <tr><td>Claude Opus 4</td><td>가장 강력한 모델</td><td>복잡한 분석, 연구, 고급 코딩</td></tr>
+        <tr><td>Claude Sonnet 4</td><td>성능과 속도의 균형</td><td>일반적인 코딩, 글쓰기, 분석</td></tr>
+        <tr><td>Claude Haiku 4</td><td>빠르고 경량</td><td>간단한 작업, 빠른 응답 필요 시</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<div id="c-install" style="display:none">
+  <div class="ph"><h1 style="color:var(--claude)">Claude 설치방법</h1><p>Claude를 사용하는 다양한 방법</p></div>
+  <div class="cs">
+    <h2>방법 1: Claude.ai 웹 사용</h2>
+    <p>가장 간단한 방법입니다. 브라우저에서 바로 사용할 수 있습니다.</p>
+    <div class="info"><p><strong>주소:</strong> https://claude.ai — 회원가입 후 무료로 사용 가능 (유료 플랜으로 더 많은 기능 이용)</p></div>
+  </div>
+  <div class="cs">
+    <h2>방법 2: Claude Code CLI 설치</h2>
+    <p>터미널에서 Claude를 직접 사용하는 강력한 도구입니다.</p>
+    <div class="cmd"><code>npm install -g @anthropic-ai/claude-code</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+    <div class="cmd"><code>claude --version</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+    <div class="tip"><p><strong>팁:</strong> Claude Code를 프로젝트 디렉토리에서 실행하면 코드베이스를 이해하고 더 정확한 도움을 받을 수 있습니다.</p></div>
+  </div>
+  <div class="cs">
+    <h2>방법 3: API 키 설정</h2>
+    <p>개발자 도구에서 Claude API를 사용하려면 API 키가 필요합니다.</p>
+    <div class="cmd"><code>export ANTHROPIC_API_KEY="your-api-key-here"</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+  </div>
+</div>
+
+<div id="c-basic" style="display:none">
+  <div class="ph"><h1 style="color:var(--claude)">기본사용법</h1><p>Claude를 효과적으로 사용하는 기본 방법</p></div>
+  <div class="cs">
+    <h2>대화 시작하기</h2>
+    <p>Claude와의 대화는 자연스러운 언어로 질문하면 됩니다. 명확하고 구체적으로 요청할수록 더 좋은 결과를 얻을 수 있습니다.</p>
+    <div class="info"><p><strong>좋은 질문 예시:</strong> "Python으로 CSV 파일을 읽어서 각 행의 데이터를 JSON 형식으로 변환하는 함수를 작성해줘. 에러 처리도 포함해줘."</p></div>
+  </div>
+  <div class="cs">
+    <h2>Claude Code 기본 명령어</h2>
+    <div class="tw"><table>
+      <thead><tr><th>명령어</th><th>설명</th></tr></thead>
+      <tbody>
+        <tr><td><code>/help</code></td><td>사용 가능한 명령어 목록 보기</td></tr>
+        <tr><td><code>/clear</code></td><td>대화 기록 초기화</td></tr>
+        <tr><td><code>/compact</code></td><td>대화 내용 압축하여 컨텍스트 절약</td></tr>
+        <tr><td><code>/review</code></td><td>현재 브랜치 코드 리뷰</td></tr>
+        <tr><td><code>/config</code></td><td>설정 변경</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<div id="c-adv" style="display:none">
+  <div class="ph"><h1 style="color:var(--claude)">고급기능</h1><p>Claude의 강력한 고급 기능들을 활용하세요</p></div>
+  <div class="cs">
+    <h2>Projects 기능</h2>
+    <p>Claude.ai의 Projects 기능을 사용하면 대화 내용을 프로젝트별로 관리하고, 프로젝트 컨텍스트를 지속적으로 유지할 수 있습니다.</p>
+    <ul><li>프로젝트별 커스텀 지시사항 설정</li><li>파일 및 문서 업로드로 컨텍스트 확장</li><li>팀원과 프로젝트 공유</li></ul>
+  </div>
+  <div class="cs">
+    <h2>Artifacts</h2>
+    <p>Claude는 코드, HTML, 마크다운 등 다양한 형식의 결과물을 Artifact로 생성할 수 있습니다. Artifact는 독립적인 창에 표시되어 바로 미리보기가 가능합니다.</p>
+  </div>
+  <div class="cs">
+    <h2>Vision (이미지 이해)</h2>
+    <p>Claude는 이미지를 분석하고 설명할 수 있습니다. 스크린샷, 다이어그램, UI 디자인 등을 업로드하면 내용을 이해하고 관련 코드나 설명을 제공합니다.</p>
+  </div>
+  <div class="cs">
+    <h2>Tool Use (함수 호출)</h2>
+    <p>API를 통해 Claude에게 외부 도구나 함수를 사용할 수 있는 능력을 부여할 수 있습니다. 이를 통해 데이터베이스 조회, 웹 검색, 계산 등의 작업을 자동화할 수 있습니다.</p>
+  </div>
+</div>
+
+<div id="c-prompt" style="display:none">
+  <div class="ph"><h1 style="color:var(--claude)">프롬프트 엔지니어링</h1><p>Claude에게 최적의 결과를 이끌어내는 프롬프트 작성법</p></div>
+  <div class="cs">
+    <h2>기본 원칙</h2>
+    <div class="fg">
+      <div class="fc"><h4>구체적으로 요청하기</h4><p>모호한 요청보다는 명확하고 구체적인 요청이 더 좋은 결과를 만듭니다.</p></div>
+      <div class="fc"><h4>컨텍스트 제공</h4><p>작업의 배경, 목적, 제약 조건을 미리 설명하면 더 적합한 답변을 받을 수 있습니다.</p></div>
+      <div class="fc"><h4>역할 설정</h4><p>"당신은 시니어 백엔드 개발자입니다"와 같이 역할을 부여하면 전문적인 답변을 받습니다.</p></div>
+      <div class="fc"><h4>출력 형식 지정</h4><p>마크다운, JSON, 코드 블록 등 원하는 출력 형식을 명시하세요.</p></div>
+    </div>
+  </div>
+  <div class="cs">
+    <h2>효과적인 프롬프트 예시</h2>
+    <div class="cb"><pre># 좋은 프롬프트 예시
+
+역할: 당신은 10년 경력의 Node.js 백엔드 개발자입니다.
+
+작업: Express.js로 사용자 인증 미들웨어를 작성해주세요.
+
+요구사항:
+- JWT 토큰 검증
+- 에러 처리 포함
+- TypeScript 사용
+- 코드에 주석 추가
+
+출력 형식: 코드 블록으로 제공해주세요.</pre>
+    <button class="copy-btn" onclick="copyCB(this)">복사</button></div>
+  </div>
+  <div class="cs">
+    <h2>Chain of Thought (단계별 사고)</h2>
+    <p>복잡한 문제는 "단계적으로 생각해서 설명해줘"라고 요청하면 더 정확한 결과를 얻을 수 있습니다. Claude는 각 단계를 명시하면서 더 논리적인 추론을 합니다.</p>
+  </div>
+</div>
+
+<div id="c-token" style="display:none">
+  <div class="ph"><h1 style="color:var(--claude)">토큰 절감방안</h1><p>효율적인 Claude 사용으로 토큰을 절약하는 방법</p></div>
+  <div class="cs">
+    <h2>토큰이란?</h2>
+    <p>토큰은 Claude가 텍스트를 처리하는 단위입니다. 대략 1토큰 ≈ 0.75 영어 단어 (한국어는 더 많은 토큰 소비). 토큰 사용량은 API 비용에 직결됩니다.</p>
+  </div>
+  <div class="cs">
+    <h2>토큰 절감 전략</h2>
+    <div class="fg">
+      <div class="fc"><h4>🗜️ /compact 사용</h4><p>Claude Code에서 /compact 명령으로 대화 기록을 요약하여 컨텍스트를 줄입니다.</p></div>
+      <div class="fc"><h4>📋 CLAUDE.md 활용</h4><p>프로젝트 컨텍스트를 CLAUDE.md에 기록하여 매번 설명하는 수고를 줄입니다.</p></div>
+      <div class="fc"><h4>🎯 핵심만 요청</h4><p>불필요한 설명 없이 핵심 내용만 요청하면 입출력 토큰 모두 절감됩니다.</p></div>
+      <div class="fc"><h4>🔄 캐싱 활용</h4><p>Prompt Caching 기능으로 반복되는 시스템 프롬프트의 토큰 비용을 90% 절감합니다.</p></div>
+    </div>
+  </div>
+  <div class="cs">
+    <h2>Prompt Caching</h2>
+    <p>자주 사용하는 긴 시스템 프롬프트나 문서가 있다면 Prompt Caching을 활용하세요. 처음에만 처리 비용이 발생하고 이후에는 95% 저렴한 캐시 비용만 지불합니다.</p>
+    <div class="cb"><pre>{
+  "system": [
+    {
+      "type": "text",
+      "text": "긴 시스템 프롬프트...",
+      "cache_control": {"type": "ephemeral"}
+    }
+  ]
+}</pre><button class="copy-btn" onclick="copyCB(this)">복사</button></div>
+  </div>
+</div>
+
+<div id="c-anthropic" style="display:none">
+  <div class="ph"><h1 style="color:var(--claude)">Anthropic 이야기</h1><p>Claude를 만든 AI 안전 회사 Anthropic에 대해</p></div>
+  <div class="cs">
+    <h2>Anthropic 소개</h2>
+    <p>Anthropic은 2021년 Dario Amodei와 Daniela Amodei 남매를 중심으로 OpenAI 출신 연구자들이 설립한 AI 안전 회사입니다. "안전하고 유익한 AI 시스템 구축"을 미션으로 합니다.</p>
+  </div>
+  <div class="cs">
+    <h2>핵심 기술: Constitutional AI</h2>
+    <p>Anthropic의 가장 중요한 연구 성과 중 하나는 Constitutional AI(CAI)입니다. 이는 AI가 인간이 설정한 원칙(constitution)에 따라 스스로 행동을 평가하고 개선하는 방식입니다.</p>
+  </div>
+  <div class="cs">
+    <h2>주요 연혁</h2>
+    <div class="tw"><table>
+      <thead><tr><th>연도</th><th>사건</th></tr></thead>
+      <tbody>
+        <tr><td>2021</td><td>Anthropic 설립</td></tr>
+        <tr><td>2023.03</td><td>Claude 1.0 출시</td></tr>
+        <tr><td>2023.07</td><td>Claude 2 출시 (100K 컨텍스트)</td></tr>
+        <tr><td>2024.03</td><td>Claude 3 (Haiku/Sonnet/Opus) 출시</td></tr>
+        <tr><td>2024.06</td><td>Claude 3.5 Sonnet 출시</td></tr>
+        <tr><td>2025.02</td><td>Claude 3.7 Sonnet (Extended Thinking) 출시</td></tr>
+        <tr><td>2025.05</td><td>Claude 4 시리즈 출시</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+</div><!-- /sec-claude -->
+
+<!-- ==================== GITHUB ==================== -->
+<div class="sec" id="sec-github">
+
+<div id="gh-intro">
+  <div class="ph"><h1 style="color:var(--github)"><i class="fab fa-github"></i> GitHub 소개</h1><p>세계 최대의 코드 호스팅 및 협업 플랫폼</p></div>
+  <div class="cs">
+    <h2>GitHub란?</h2>
+    <p>GitHub는 Git 버전 관리 시스템을 기반으로 하는 코드 호스팅 플랫폼입니다. 2008년 설립되어 2018년 Microsoft에 인수되었으며, 현재 1억 명 이상의 개발자와 4억 개 이상의 저장소를 보유하고 있습니다.</p>
+    <div class="fg">
+      <div class="fc"><h4><i class="fas fa-code-branch" style="color:#4CAF50"></i> 버전 관리</h4><p>Git을 통한 코드 변경 이력 관리 및 브랜치 전략을 지원합니다.</p></div>
+      <div class="fc"><h4><i class="fas fa-users" style="color:#2196F3"></i> 협업</h4><p>Pull Request, Code Review, Issues로 팀 협업을 효율화합니다.</p></div>
+      <div class="fc"><h4><i class="fas fa-robot" style="color:#9C27B0"></i> CI/CD</h4><p>GitHub Actions로 자동 빌드, 테스트, 배포 파이프라인을 구축합니다.</p></div>
+      <div class="fc"><h4><i class="fas fa-shield-alt" style="color:#FF9800"></i> 보안</h4><p>Dependabot, Secret Scanning, Code Scanning으로 보안을 강화합니다.</p></div>
+    </div>
+  </div>
+</div>
+
+<div id="gh-install" style="display:none">
+  <div class="ph"><h1 style="color:var(--github)">GitHub 설치방법</h1><p>Git 설치부터 GitHub 설정까지</p></div>
+  <div class="cs">
+    <h2>Git 설치</h2>
+    <div class="cmd"><code>winget install Git.Git</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+    <div class="cmd"><code>git --version</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+  </div>
+  <div class="cs">
+    <h2>초기 설정</h2>
+    <div class="cmd"><code>git config --global user.name "Your Name"</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+    <div class="cmd"><code>git config --global user.email "you@example.com"</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+    <div class="cmd"><code>git config --global init.defaultBranch main</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+  </div>
+  <div class="cs">
+    <h2>GitHub CLI 설치</h2>
+    <div class="cmd"><code>winget install GitHub.cli</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+    <div class="cmd"><code>gh auth login</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+  </div>
+</div>
+
+<div id="gh-basic" style="display:none">
+  <div class="ph"><h1 style="color:var(--github)">기본사용법</h1><p>Git의 핵심 명령어와 GitHub 기본 워크플로우</p></div>
+  <div class="cs">
+    <h2>기본 Git 명령어</h2>
+    <div class="tw"><table>
+      <thead><tr><th>명령어</th><th>설명</th></tr></thead>
+      <tbody>
+        <tr><td><code>git init</code></td><td>새 저장소 초기화</td></tr>
+        <tr><td><code>git clone [url]</code></td><td>원격 저장소 복제</td></tr>
+        <tr><td><code>git add .</code></td><td>모든 변경 파일 스테이징</td></tr>
+        <tr><td><code>git commit -m "message"</code></td><td>커밋 생성</td></tr>
+        <tr><td><code>git push origin main</code></td><td>원격 저장소에 푸시</td></tr>
+        <tr><td><code>git pull</code></td><td>원격 변경사항 가져오기</td></tr>
+        <tr><td><code>git status</code></td><td>작업 트리 상태 확인</td></tr>
+        <tr><td><code>git log --oneline</code></td><td>커밋 이력 간략히 보기</td></tr>
+        <tr><td><code>git branch feature/name</code></td><td>새 브랜치 생성</td></tr>
+        <tr><td><code>git checkout -b feature/name</code></td><td>브랜치 생성 후 전환</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<div id="gh-collab" style="display:none">
+  <div class="ph"><h1 style="color:var(--github)">협업 워크플로우</h1><p>팀과 함께 효율적으로 개발하는 방법</p></div>
+  <div class="cs">
+    <h2>Fork &amp; Pull Request 워크플로우</h2>
+    <ol>
+      <li>원본 저장소를 Fork합니다</li>
+      <li>포크한 저장소를 로컬에 Clone합니다</li>
+      <li>새 브랜치를 만들고 변경사항을 커밋합니다</li>
+      <li>포크한 저장소에 Push합니다</li>
+      <li>원본 저장소에 Pull Request를 생성합니다</li>
+      <li>코드 리뷰 후 Merge합니다</li>
+    </ol>
+    <div class="cmd"><code>git checkout -b feature/new-feature</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+    <div class="cmd"><code>git push origin feature/new-feature</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+    <div class="cmd"><code>gh pr create --title "Add new feature" --body "Description"</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+  </div>
+  <div class="cs">
+    <h2>코드 리뷰 모범 사례</h2>
+    <ul>
+      <li>PR은 작고 집중적으로 유지하세요 (300줄 이하 권장)</li>
+      <li>명확한 PR 설명과 스크린샷을 첨부하세요</li>
+      <li>리뷰는 코드에 대한 것이지 사람에 대한 것이 아닙니다</li>
+      <li>LGTM(Looks Good To Me) 전 최소 1명 이상 리뷰를 받으세요</li>
+    </ul>
+  </div>
+</div>
+
+<div id="gh-flow" style="display:none">
+  <div class="ph"><h1 style="color:var(--github)">GitHub Flow</h1><p>간결하고 효과적인 GitHub 브랜치 전략</p></div>
+  <div class="cs">
+    <h2>GitHub Flow란?</h2>
+    <p>GitHub Flow는 main 브랜치 하나를 기반으로 하는 간단한 브랜치 전략입니다. 지속적 배포(CD)에 최적화되어 있습니다.</p>
+    <div class="fg">
+      <div class="fc"><h4>1. 브랜치 생성</h4><p>main에서 기능 브랜치를 만듭니다. 이름은 descriptive하게 작성합니다.</p></div>
+      <div class="fc"><h4>2. 커밋</h4><p>작은 단위로 자주 커밋합니다. 커밋 메시지는 명확하게 작성합니다.</p></div>
+      <div class="fc"><h4>3. Pull Request</h4><p>리뷰가 필요할 때 PR을 오픈합니다. 완성 전에도 Draft PR을 활용합니다.</p></div>
+      <div class="fc"><h4>4. 리뷰 &amp; 머지</h4><p>팀원의 리뷰 후 main에 머지합니다. 자동 배포가 트리거됩니다.</p></div>
+    </div>
+  </div>
+  <div class="cs">
+    <h2>브랜치 네이밍 컨벤션</h2>
+    <div class="tw"><table>
+      <thead><tr><th>접두사</th><th>용도</th><th>예시</th></tr></thead>
+      <tbody>
+        <tr><td>feature/</td><td>새 기능 개발</td><td>feature/user-auth</td></tr>
+        <tr><td>fix/</td><td>버그 수정</td><td>fix/login-error</td></tr>
+        <tr><td>docs/</td><td>문서 수정</td><td>docs/api-guide</td></tr>
+        <tr><td>refactor/</td><td>코드 리팩토링</td><td>refactor/db-layer</td></tr>
+        <tr><td>hotfix/</td><td>긴급 수정</td><td>hotfix/security-patch</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<div id="gh-md" style="display:none">
+  <div class="ph"><h1 style="color:var(--github)">마크다운 문법</h1><p>GitHub에서 사용하는 마크다운 완벽 가이드</p></div>
+  <div class="cs">
+    <h2>기본 문법</h2>
+    <div class="cb"><pre># 제목 1
+## 제목 2
+### 제목 3
+
+**굵은 글씨**  *기울임*  ~~취소선~~
+
+- 목록 항목
+- 또 다른 항목
+  - 중첩 항목
+
+1. 번호 목록
+2. 두 번째 항목
+
+[링크 텍스트](URL)
+![이미지 설명](이미지URL)
+
+`인라인 코드`
+
+```언어명
+코드 블록
+```
+
+> 인용구
+
+| 열1 | 열2 |
+|-----|-----|
+| 값1 | 값2 |</pre>
+    <button class="copy-btn" onclick="copyCB(this)">복사</button></div>
+  </div>
+  <div class="cs">
+    <h2>GitHub 특수 기능</h2>
+    <ul>
+      <li><code>#123</code> — 이슈/PR 참조</li>
+      <li><code>@username</code> — 사용자 멘션</li>
+      <li><code>- [ ] 할 일</code> — 체크박스</li>
+      <li><code>:emoji:</code> — 이모지 (예: :rocket: → 🚀)</li>
+    </ul>
+  </div>
+</div>
+
+<div id="gh-actions" style="display:none">
+  <div class="ph"><h1 style="color:var(--github)">GitHub Actions</h1><p>자동화된 CI/CD 파이프라인 구축</p></div>
+  <div class="cs">
+    <h2>GitHub Actions란?</h2>
+    <p>코드 변경 시 자동으로 빌드, 테스트, 배포하는 CI/CD 플랫폼입니다. 저장소의 <code>.github/workflows/</code> 디렉토리에 YAML 파일로 워크플로우를 정의합니다.</p>
+  </div>
+  <div class="cs">
+    <h2>기본 워크플로우 예시</h2>
+    <div class="cb"><pre>name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npm test
+      - run: npm run build</pre>
+    <button class="copy-btn" onclick="copyCB(this)">복사</button></div>
+  </div>
+  <div class="cs">
+    <h2>주요 트리거 이벤트</h2>
+    <div class="tw"><table>
+      <thead><tr><th>이벤트</th><th>설명</th></tr></thead>
+      <tbody>
+        <tr><td>push</td><td>브랜치에 코드 푸시 시</td></tr>
+        <tr><td>pull_request</td><td>PR 생성/업데이트 시</td></tr>
+        <tr><td>schedule</td><td>cron 스케줄에 따라 실행</td></tr>
+        <tr><td>workflow_dispatch</td><td>수동 실행</td></tr>
+        <tr><td>release</td><td>릴리스 생성 시</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+</div><!-- /sec-github -->
+
+<!-- ==================== SUPABASE ==================== -->
+<div class="sec" id="sec-supabase">
+
+<div id="sb-intro">
+  <div class="ph"><h1 style="color:var(--supabase)"><i class="fas fa-database"></i> Supabase 소개</h1><p>오픈소스 Firebase 대안, PostgreSQL 기반 백엔드 서비스</p></div>
+  <div class="cs">
+    <h2>Supabase란?</h2>
+    <p>Supabase는 PostgreSQL을 기반으로 한 오픈소스 백엔드 서비스(BaaS)입니다. 데이터베이스, 인증, 스토리지, 실시간 기능, 엣지 함수를 하나의 플랫폼에서 제공합니다.</p>
+    <div class="fg">
+      <div class="fc"><h4 style="color:var(--supabase)">PostgreSQL</h4><p>완전한 PostgreSQL 데이터베이스로 SQL의 모든 기능을 사용할 수 있습니다.</p></div>
+      <div class="fc"><h4 style="color:var(--supabase)">실시간 기능</h4><p>웹소켓을 통한 실시간 데이터 동기화 기능을 기본 제공합니다.</p></div>
+      <div class="fc"><h4 style="color:var(--supabase)">자동 API</h4><p>데이터베이스 스키마에서 RESTful API와 GraphQL을 자동으로 생성합니다.</p></div>
+      <div class="fc"><h4 style="color:var(--supabase)">오픈소스</h4><p>MIT 라이센스로 자체 호스팅이 가능하며 벤더 종속 위험이 없습니다.</p></div>
+    </div>
+  </div>
+</div>
+
+<div id="sb-install" style="display:none">
+  <div class="ph"><h1 style="color:var(--supabase)">Supabase 설치방법</h1><p>Supabase 프로젝트 생성 및 CLI 설정</p></div>
+  <div class="cs">
+    <h2>Supabase CLI 설치</h2>
+    <div class="cmd"><code>npm install -g supabase</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+    <div class="cmd"><code>supabase --version</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+  </div>
+  <div class="cs">
+    <h2>JavaScript SDK 설치</h2>
+    <div class="cmd"><code>npm install @supabase/supabase-js</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+  </div>
+  <div class="cs">
+    <h2>클라이언트 초기화</h2>
+    <div class="cb"><pre>import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+)</pre><button class="copy-btn" onclick="copyCB(this)">복사</button></div>
+  </div>
+</div>
+
+<div id="sb-db" style="display:none">
+  <div class="ph"><h1 style="color:var(--supabase)">데이터베이스</h1><p>Supabase PostgreSQL 데이터베이스 활용법</p></div>
+  <div class="cs">
+    <h2>데이터 조회 (SELECT)</h2>
+    <div class="cb"><pre>// 모든 데이터 가져오기
+const { data, error } = await supabase
+  .from('users')
+  .select('*')
+
+// 필터링 및 정렬
+const { data } = await supabase
+  .from('users')
+  .select('id, name, email')
+  .eq('active', true)
+  .order('created_at', { ascending: false })
+  .limit(10)</pre><button class="copy-btn" onclick="copyCB(this)">복사</button></div>
+  </div>
+  <div class="cs">
+    <h2>데이터 삽입/수정/삭제</h2>
+    <div class="cb"><pre>// INSERT
+const { data } = await supabase
+  .from('users')
+  .insert([{ name: '홍길동', email: 'hong@example.com' }])
+  .select()
+
+// UPDATE
+await supabase.from('users').update({ name: '홍길순' }).eq('id', 1)
+
+// DELETE
+await supabase.from('users').delete().eq('id', 1)</pre><button class="copy-btn" onclick="copyCB(this)">복사</button></div>
+  </div>
+</div>
+
+<div id="sb-auth" style="display:none">
+  <div class="ph"><h1 style="color:var(--supabase)">인증</h1><p>Supabase Authentication으로 사용자 인증 구현</p></div>
+  <div class="cs">
+    <h2>이메일 회원가입 / 로그인</h2>
+    <div class="cb"><pre>// 회원가입
+const { data, error } = await supabase.auth.signUp({
+  email: 'user@example.com',
+  password: 'password123'
+})
+
+// 로그인
+const { data, error } = await supabase.auth.signInWithPassword({
+  email: 'user@example.com',
+  password: 'password123'
+})
+
+// 로그아웃
+await supabase.auth.signOut()</pre><button class="copy-btn" onclick="copyCB(this)">복사</button></div>
+  </div>
+  <div class="cs">
+    <h2>소셜 로그인</h2>
+    <div class="cb"><pre>// Google 로그인
+await supabase.auth.signInWithOAuth({
+  provider: 'google',
+  options: { redirectTo: 'https://yourapp.com/auth/callback' }
+})
+
+// GitHub 로그인
+await supabase.auth.signInWithOAuth({ provider: 'github' })</pre><button class="copy-btn" onclick="copyCB(this)">복사</button></div>
+  </div>
+</div>
+
+<div id="sb-api" style="display:none">
+  <div class="ph"><h1 style="color:var(--supabase)">API</h1><p>Supabase Auto-generated REST API 활용</p></div>
+  <div class="cs">
+    <h2>REST API 자동 생성</h2>
+    <p>Supabase는 데이터베이스 테이블에서 자동으로 RESTful API를 생성합니다. PostgREST를 기반으로 합니다.</p>
+    <div class="cb"><pre>curl 'https://[project-id].supabase.co/rest/v1/users' \
+  -H "apikey: YOUR_ANON_KEY" \
+  -H "Authorization: Bearer YOUR_ANON_KEY"</pre><button class="copy-btn" onclick="copyCB(this)">복사</button></div>
+  </div>
+  <div class="cs">
+    <h2>Edge Functions</h2>
+    <p>Deno 기반의 서버리스 함수를 배포하여 커스텀 백엔드 로직을 구현할 수 있습니다.</p>
+    <div class="cmd"><code>supabase functions new my-function</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+    <div class="cmd"><code>supabase functions deploy my-function</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+  </div>
+</div>
+
+<div id="sb-storage" style="display:none">
+  <div class="ph"><h1 style="color:var(--supabase)">스토리지</h1><p>Supabase Storage로 파일 관리하기</p></div>
+  <div class="cs">
+    <h2>파일 업로드</h2>
+    <div class="cb"><pre>const { data, error } = await supabase.storage
+  .from('avatars')
+  .upload('public/avatar1.png', file, {
+    cacheControl: '3600',
+    upsert: false
+  })</pre><button class="copy-btn" onclick="copyCB(this)">복사</button></div>
+  </div>
+  <div class="cs">
+    <h2>공개 URL 가져오기</h2>
+    <div class="cb"><pre>const { data } = supabase.storage
+  .from('avatars')
+  .getPublicUrl('public/avatar1.png')
+
+console.log(data.publicUrl)</pre><button class="copy-btn" onclick="copyCB(this)">복사</button></div>
+  </div>
+</div>
+
+<div id="sb-rls" style="display:none">
+  <div class="ph"><h1 style="color:var(--supabase)">RLS &amp; 보안</h1><p>Row Level Security로 데이터 접근 제어하기</p></div>
+  <div class="cs">
+    <h2>RLS란?</h2>
+    <p>Row Level Security(RLS)는 PostgreSQL의 기능으로, 각 행(row)에 대한 접근을 사용자별로 제어할 수 있습니다. Supabase에서는 RLS를 통해 사용자가 자신의 데이터에만 접근하도록 제한합니다.</p>
+    <div class="tip"><p><strong>중요:</strong> Supabase에서는 새 테이블을 만들 때 반드시 RLS를 활성화하세요. 기본적으로 비활성화 상태라면 모든 anon 사용자가 데이터에 접근할 수 있습니다.</p></div>
+  </div>
+  <div class="cs">
+    <h2>RLS 정책 예시</h2>
+    <div class="cb"><pre>-- RLS 활성화
+ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
+
+-- 사용자는 자신의 글만 볼 수 있음
+CREATE POLICY "Users can view own posts"
+ON posts FOR SELECT
+USING (auth.uid() = user_id);
+
+-- 인증된 사용자만 글 작성 가능
+CREATE POLICY "Authenticated users can insert"
+ON posts FOR INSERT
+WITH CHECK (auth.uid() = user_id);
+
+-- 자신의 글만 수정/삭제 가능
+CREATE POLICY "Users can update own posts"
+ON posts FOR UPDATE
+USING (auth.uid() = user_id);</pre><button class="copy-btn" onclick="copyCB(this)">복사</button></div>
+  </div>
+</div>
+
+<div id="sb-vector" style="display:none">
+  <div class="ph"><h1 style="color:var(--supabase)">벡터DB &amp; AI</h1><p>pgvector로 AI 기반 시맨틱 검색 구현하기</p></div>
+  <div class="cs">
+    <h2>pgvector란?</h2>
+    <p>Supabase는 PostgreSQL 확장인 pgvector를 지원하여 벡터 데이터를 저장하고 유사도 검색을 수행할 수 있습니다. RAG(Retrieval Augmented Generation) 시스템 구축에 활용됩니다.</p>
+  </div>
+  <div class="cs">
+    <h2>벡터 테이블 생성 및 검색</h2>
+    <div class="cb"><pre>-- pgvector 확장 활성화
+CREATE EXTENSION vector;
+
+-- 벡터 컬럼이 있는 테이블
+CREATE TABLE documents (
+  id BIGSERIAL PRIMARY KEY,
+  content TEXT,
+  embedding VECTOR(1536)
+);
+
+-- 유사도 검색 함수
+CREATE OR REPLACE FUNCTION match_documents(
+  query_embedding VECTOR(1536),
+  match_threshold FLOAT,
+  match_count INT
+)
+RETURNS TABLE(id BIGINT, content TEXT, similarity FLOAT)
+LANGUAGE SQL AS $$
+  SELECT id, content,
+    1 - (embedding <=> query_embedding) AS similarity
+  FROM documents
+  WHERE 1 - (embedding <=> query_embedding) > match_threshold
+  ORDER BY similarity DESC
+  LIMIT match_count;
+$$;</pre><button class="copy-btn" onclick="copyCB(this)">복사</button></div>
+  </div>
+</div>
+
+</div><!-- /sec-supabase -->
+
+<!-- ==================== VERCEL ==================== -->
+<div class="sec" id="sec-vercel">
+
+<div id="vc-intro">
+  <div class="ph"><h1 style="color:#ccc"><i class="fas fa-rocket"></i> Vercel 소개</h1><p>프론트엔드 배포의 표준 플랫폼</p></div>
+  <div class="cs">
+    <h2>Vercel이란?</h2>
+    <p>Vercel은 프론트엔드 웹 애플리케이션을 위한 클라우드 플랫폼입니다. Next.js를 만든 회사로, GitHub와 연동하여 코드 변경 시 자동으로 배포하는 CI/CD 기능을 제공합니다.</p>
+    <div class="fg">
+      <div class="fc"><h4>자동 배포</h4><p>GitHub push만으로 자동 배포. PR마다 미리보기 URL도 자동 생성됩니다.</p></div>
+      <div class="fc"><h4>엣지 네트워크</h4><p>전 세계 엣지 서버에 배포하여 어디서나 빠른 로딩 속도를 제공합니다.</p></div>
+      <div class="fc"><h4>Serverless Functions</h4><p>API 라우트를 서버리스 함수로 자동 변환하여 별도 백엔드 없이 API 구현이 가능합니다.</p></div>
+      <div class="fc"><h4>Analytics</h4><p>실시간 웹 성능 분석 및 Core Web Vitals 모니터링을 기본 제공합니다.</p></div>
+    </div>
+  </div>
+</div>
+
+<div id="vc-install" style="display:none">
+  <div class="ph"><h1 style="color:#ccc">Vercel 설치방법</h1><p>Vercel CLI 설치 및 계정 설정</p></div>
+  <div class="cs">
+    <h2>Vercel CLI 설치</h2>
+    <div class="cmd"><code>npm install -g vercel</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+    <div class="cmd"><code>vercel --version</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+  </div>
+  <div class="cs">
+    <h2>로그인</h2>
+    <div class="cmd"><code>vercel login</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+  </div>
+</div>
+
+<div id="vc-deploy" style="display:none">
+  <div class="ph"><h1 style="color:#ccc">배포방법</h1><p>Vercel에 프로젝트 배포하기</p></div>
+  <div class="cs">
+    <h2>첫 번째 배포</h2>
+    <div class="cmd"><code>vercel</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+  </div>
+  <div class="cs">
+    <h2>프로덕션 배포</h2>
+    <div class="cmd"><code>vercel --prod</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+    <div class="tip"><p><strong>팁:</strong> GitHub 저장소를 Vercel과 연동하면 main 브랜치 push 시 자동으로 프로덕션 배포됩니다.</p></div>
+  </div>
+  <div class="cs">
+    <h2>배포 목록 확인</h2>
+    <div class="cmd"><code>vercel ls</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+  </div>
+</div>
+
+<div id="vc-domain" style="display:none">
+  <div class="ph"><h1 style="color:#ccc">도메인 설정</h1><p>커스텀 도메인 연결하기</p></div>
+  <div class="cs">
+    <h2>도메인 추가</h2>
+    <div class="cmd"><code>vercel domains add yourdomain.com</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+  </div>
+  <div class="cs">
+    <h2>DNS 설정</h2>
+    <p>도메인 등록 업체에서 다음 DNS 레코드를 추가합니다:</p>
+    <div class="tw"><table>
+      <thead><tr><th>타입</th><th>이름</th><th>값</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td>@</td><td>76.76.21.21</td></tr>
+        <tr><td>CNAME</td><td>www</td><td>cname.vercel-dns.com</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<div id="vc-env" style="display:none">
+  <div class="ph"><h1 style="color:#ccc">환경변수</h1><p>Vercel 환경변수 관리하기</p></div>
+  <div class="cs">
+    <h2>환경변수 설정</h2>
+    <div class="cmd"><code>vercel env add NEXT_PUBLIC_API_URL</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+    <div class="cmd"><code>vercel env ls</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+  </div>
+  <div class="cs">
+    <h2>환경별 변수</h2>
+    <p>Vercel은 세 가지 환경에 대해 별도로 환경변수를 설정할 수 있습니다:</p>
+    <ul>
+      <li><strong style="color:var(--text-1)">Production</strong> — main 브랜치 배포</li>
+      <li><strong style="color:var(--text-1)">Preview</strong> — PR 및 다른 브랜치 배포</li>
+      <li><strong style="color:var(--text-1)">Development</strong> — 로컬 개발 환경 (<code>vercel env pull</code>로 다운로드)</li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- /sec-vercel -->
+
+<!-- ==================== VS CODE ==================== -->
+<div class="sec" id="sec-vscode">
+
+<div id="vs-intro">
+  <div class="ph"><h1 style="color:var(--vscode)"><i class="fas fa-code"></i> VS Code 소개</h1><p>Microsoft의 강력한 오픈소스 코드 에디터</p></div>
+  <div class="cs">
+    <h2>VS Code란?</h2>
+    <p>Visual Studio Code(VS Code)는 Microsoft가 개발한 무료 오픈소스 코드 에디터입니다. 2015년 출시 이후 전 세계 개발자들의 가장 인기있는 에디터가 되었습니다.</p>
+    <div class="fg">
+      <div class="fc"><h4 style="color:var(--vscode)">IntelliSense</h4><p>코드 자동완성, 파라미터 힌트, 멤버 목록 등 스마트 코드 지원</p></div>
+      <div class="fc"><h4 style="color:var(--vscode)">디버깅</h4><p>내장 디버거로 중단점 설정, 변수 검사, 콜스택 확인이 가능합니다.</p></div>
+      <div class="fc"><h4 style="color:var(--vscode)">Git 통합</h4><p>Git 명령어를 GUI로 편리하게 실행하고 변경사항을 시각적으로 확인합니다.</p></div>
+      <div class="fc"><h4 style="color:var(--vscode)">확장 프로그램</h4><p>30,000개 이상의 확장 프로그램으로 기능을 무한히 확장할 수 있습니다.</p></div>
+    </div>
+  </div>
+</div>
+
+<div id="vs-install" style="display:none">
+  <div class="ph"><h1 style="color:var(--vscode)">VS Code 설치방법</h1><p>운영체제별 VS Code 설치 가이드</p></div>
+  <div class="cs">
+    <h2>Windows</h2>
+    <div class="cmd"><code>winget install Microsoft.VisualStudioCode</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+  </div>
+  <div class="cs">
+    <h2>macOS</h2>
+    <div class="cmd"><code>brew install --cask visual-studio-code</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+  </div>
+  <div class="cs">
+    <h2>Linux (Ubuntu/Debian)</h2>
+    <div class="cmd"><code>sudo apt install code</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+  </div>
+</div>
+
+<div id="vs-basic" style="display:none">
+  <div class="ph"><h1 style="color:var(--vscode)">기본사용법</h1><p>VS Code 핵심 기능 사용하기</p></div>
+  <div class="cs">
+    <h2>Command Palette</h2>
+    <p>VS Code의 모든 기능에 접근하는 핵심 도구입니다.</p>
+    <div class="info"><p><strong>단축키:</strong> Ctrl+Shift+P (Windows/Linux) 또는 Cmd+Shift+P (macOS)</p></div>
+  </div>
+  <div class="cs">
+    <h2>통합 터미널</h2>
+    <p>VS Code 내에서 바로 터미널을 사용할 수 있습니다.</p>
+    <div class="info"><p><strong>단축키:</strong> Ctrl+` (백틱) 또는 메뉴에서 Terminal → New Terminal</p></div>
+  </div>
+  <div class="cs">
+    <h2>파일 탐색기</h2>
+    <p>왼쪽 사이드바의 파일 탐색기로 프로젝트 구조를 확인하고 파일을 열 수 있습니다. <code>Ctrl+P</code>로 파일명 검색이 가능합니다.</p>
+  </div>
+</div>
+
+<div id="vs-ext" style="display:none">
+  <div class="ph"><h1 style="color:var(--vscode)">확장프로그램</h1><p>개발 생산성을 높이는 필수 확장 프로그램</p></div>
+  <div class="cs">
+    <h2>필수 확장 프로그램</h2>
+    <div class="tw"><table>
+      <thead><tr><th>이름</th><th>용도</th></tr></thead>
+      <tbody>
+        <tr><td>Prettier</td><td>코드 자동 포맷팅</td></tr>
+        <tr><td>ESLint</td><td>JavaScript 코드 품질 검사</td></tr>
+        <tr><td>GitLens</td><td>고급 Git 기능 통합</td></tr>
+        <tr><td>GitHub Copilot</td><td>AI 코드 자동완성</td></tr>
+        <tr><td>Thunder Client</td><td>REST API 테스트</td></tr>
+        <tr><td>Remote SSH</td><td>원격 서버 개발</td></tr>
+        <tr><td>Docker</td><td>Docker 컨테이너 관리</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="cs">
+    <h2>확장 프로그램 CLI 설치</h2>
+    <div class="cmd"><code>code --install-extension esbenp.prettier-vscode</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+    <div class="cmd"><code>code --install-extension dbaeumer.vscode-eslint</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+  </div>
+</div>
+
+<div id="vs-keys" style="display:none">
+  <div class="ph"><h1 style="color:var(--vscode)">단축키</h1><p>생산성을 2배로 높이는 VS Code 단축키</p></div>
+  <div class="cs">
+    <h2>편집 단축키 (Windows/Linux)</h2>
+    <div class="tw"><table>
+      <thead><tr><th>단축키</th><th>동작</th></tr></thead>
+      <tbody>
+        <tr><td>Ctrl+P</td><td>파일 빠른 열기</td></tr>
+        <tr><td>Ctrl+Shift+P</td><td>명령 팔레트</td></tr>
+        <tr><td>Ctrl+D</td><td>다음 같은 단어 선택</td></tr>
+        <tr><td>Alt+Click</td><td>다중 커서</td></tr>
+        <tr><td>Ctrl+/</td><td>주석 토글</td></tr>
+        <tr><td>Alt+↑/↓</td><td>줄 이동</td></tr>
+        <tr><td>Shift+Alt+↓</td><td>줄 복사</td></tr>
+        <tr><td>Ctrl+`</td><td>터미널 열기</td></tr>
+        <tr><td>F12</td><td>정의로 이동</td></tr>
+        <tr><td>Ctrl+Shift+F</td><td>전체 검색</td></tr>
+        <tr><td>Ctrl+Z</td><td>실행 취소</td></tr>
+        <tr><td>Ctrl+Shift+Z</td><td>다시 실행</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+</div><!-- /sec-vscode -->
+
+<!-- ==================== MANUAL ==================== -->
+<div class="sec" id="sec-manual">
+
+<div id="m-start">
+  <div class="ph"><h1 style="color:var(--accent)"><i class="fas fa-book"></i> 시작하기</h1><p>Vibe Coding Manual 소개 및 사용 방법</p></div>
+  <div class="cs">
+    <h2>Vibe Coding Manual이란?</h2>
+    <p>Vibe Coding Manual은 현대 웹 개발에 필수적인 5가지 도구 — Claude, GitHub, Supabase, Vercel, VS Code — 의 사용법을 한 곳에서 제공하는 종합 가이드입니다. 초보자부터 중급 개발자까지 빠르게 바이브 코딩 환경을 구축할 수 있도록 돕습니다.</p>
+  </div>
+  <div class="cs">
+    <h2>사용 방법</h2>
+    <ul>
+      <li>상단 탭에서 원하는 도구를 선택하세요</li>
+      <li>왼쪽 사이드바에서 세부 주제를 클릭하세요</li>
+      <li>명령어 옆 복사 버튼으로 커맨드를 빠르게 복사하세요</li>
+      <li>각 섹션의 코드 예시를 바로 활용하세요</li>
+    </ul>
+  </div>
+  <div class="cs">
+    <h2>권장 학습 순서</h2>
+    <div class="tl">
+      <div class="tl-item">
+        <div class="tl-dot" style="background:rgba(0,122,204,.12);color:var(--vscode);border-color:var(--vscode)">1</div>
+        <div class="tl-body">
+          <h4>VS Code 설치</h4>
+          <p>개발 환경의 기반이 되는 코드 에디터</p>
+          <div class="cmd"><code>winget install Microsoft.VisualStudioCode</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:rgba(255,255,255,.04);color:#bbb;border-color:#666">2</div>
+        <div class="tl-body">
+          <h4>Git &amp; GitHub 설정</h4>
+          <p>버전 관리 및 협업 도구</p>
+          <div class="cmd"><code>winget install Git.Git</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:rgba(62,207,142,.12);color:var(--supabase);border-color:var(--supabase)">3</div>
+        <div class="tl-body">
+          <h4>Supabase 설정</h4>
+          <p>백엔드 데이터베이스 서비스</p>
+          <div class="cmd"><code>npm install -g supabase</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:rgba(200,200,200,.04);color:#bbb;border-color:#666">4</div>
+        <div class="tl-body">
+          <h4>Vercel 배포</h4>
+          <p>프론트엔드 자동 배포 플랫폼</p>
+          <div class="cmd"><code>npm install -g vercel</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:rgba(217,119,6,.12);color:var(--claude);border-color:var(--claude)">5</div>
+        <div class="tl-body">
+          <h4>Claude Code 설치</h4>
+          <p>AI 기반 코딩 어시스턴트</p>
+          <div class="cmd"><code>npm install -g @anthropic-ai/claude-code</code><button class="copy-btn" onclick="copyCmd(this)">복사</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="m-layout" style="display:none">
+  <div class="ph"><h1 style="color:var(--accent)">화면구성</h1><p>Vibe Coding Manual의 화면 구성 안내</p></div>
+  <div class="cs">
+    <h2>전체 레이아웃</h2>
+    <div class="fg">
+      <div class="fc"><h4>상단 내비게이션 바</h4><p>사이트 로고와 도구별 탭 버튼이 있습니다. 탭 클릭 시 해당 도구 섹션으로 이동합니다. 우측에는 사용자매뉴얼 버튼이 있습니다.</p></div>
+      <div class="fc"><h4>좌측 사이드바</h4><p>현재 선택된 도구의 세부 메뉴를 표시합니다. 메뉴 클릭 시 해당 콘텐츠로 이동합니다.</p></div>
+      <div class="fc"><h4>메인 콘텐츠 영역</h4><p>선택한 섹션의 상세 내용이 표시됩니다. 코드 예시, 설명, 표 등 다양한 형태의 콘텐츠를 제공합니다.</p></div>
+      <div class="fc"><h4>푸터</h4><p>사이트 소개, 가이드 목록, 관련 링크를 3컬럼으로 제공합니다.</p></div>
+    </div>
+  </div>
+</div>
+
+<div id="m-feat" style="display:none">
+  <div class="ph"><h1 style="color:var(--accent)">주요기능</h1><p>Vibe Coding Manual의 주요 기능 소개</p></div>
+  <div class="cs">
+    <h2>복사 버튼</h2>
+    <p>명령어나 코드 블록 옆의 복사 버튼을 클릭하면 클립보드에 자동으로 복사됩니다. 복사 성공 시 버튼이 초록색으로 변합니다.</p>
+  </div>
+  <div class="cs">
+    <h2>탭 전환</h2>
+    <p>상단 내비게이션의 탭을 클릭하면 해당 도구의 섹션으로 부드럽게 전환됩니다. 사이드바 메뉴도 자동으로 해당 도구에 맞게 업데이트됩니다.</p>
+  </div>
+  <div class="cs">
+    <h2>모바일 지원</h2>
+    <p>모바일 기기에서는 햄버거 메뉴 버튼을 클릭하여 사이드바를 열 수 있습니다. 반응형 레이아웃으로 모든 기기에서 최적화된 화면을 제공합니다.</p>
+  </div>
+</div>
+
+<div id="m-faq" style="display:none">
+  <div class="ph"><h1 style="color:var(--accent)">자주 묻는 질문</h1><p>자주 나오는 질문들에 대한 답변</p></div>
+  <div class="cs">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Claude는 무료로 사용할 수 있나요?<i class="fas fa-chevron-down faq-icon"></i></div>
+      <div class="faq-a">Claude.ai에서 무료 플랜으로 사용할 수 있습니다. 무료 플랜은 사용량에 제한이 있으며, Pro 플랜($20/월)으로 업그레이드하면 더 많은 메시지와 고급 모델을 사용할 수 있습니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Supabase 무료 플랜의 한계는?<i class="fas fa-chevron-down faq-icon"></i></div>
+      <div class="faq-a">무료 플랜은 500MB 데이터베이스, 1GB 스토리지, 50,000 MAU(월 활성 사용자)를 제공합니다. 소규모 프로젝트나 테스트에 충분하며, 프로덕션 수준의 서비스는 Pro 플랜($25/월)을 권장합니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Vercel 무료 플랜으로 상업적 사용이 가능한가요?<i class="fas fa-chevron-down faq-icon"></i></div>
+      <div class="faq-a">Vercel Hobby 플랜(무료)은 개인 비상업적 프로젝트에 사용하도록 설계되어 있습니다. 상업적 프로젝트는 Pro 플랜($20/월)을 사용해야 합니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">GitHub Actions는 무료인가요?<i class="fas fa-chevron-down faq-icon"></i></div>
+      <div class="faq-a">공개 저장소는 GitHub Actions가 완전 무료입니다. 비공개 저장소는 매월 2,000분의 무료 사용량을 제공하며, 초과 시 요금이 발생합니다.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">VS Code와 GitHub Copilot의 차이는?<i class="fas fa-chevron-down faq-icon"></i></div>
+      <div class="faq-a">VS Code는 코드 에디터이고, GitHub Copilot은 VS Code에 설치하는 AI 코드 자동완성 확장 프로그램입니다. Copilot은 $10/월의 구독 비용이 있지만, 학생과 오픈소스 기여자는 무료로 사용할 수 있습니다.</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /sec-manual -->
+
+</main>
+
+<!-- AUTH MODAL -->
+<div id="auth-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-brand"><i class="fas fa-robot" style="color:var(--claude)"></i> Vibe Coding Manual</div>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tab-login" onclick="setAuthMode('login')">로그인</button>
+      <button class="modal-tab" id="tab-signup" onclick="setAuthMode('signup')">회원가입</button>
+    </div>
+
+    <!-- Supabase config (shown if not configured) -->
+    <div id="config-panel" class="config-panel" style="display:none">
+      <p><i class="fas fa-cog"></i> Supabase 프로젝트 설정이 필요합니다. Dashboard → Settings → API에서 값을 확인하세요.</p>
+      <input type="text" id="cfg-url" placeholder="Project URL  (https://xxxx.supabase.co)">
+      <input type="text" id="cfg-key" placeholder="Anon / Public Key">
+      <button class="config-save" onclick="saveConfig()">저장 &amp; 연결</button>
+    </div>
+
+    <div id="auth-msg" class="auth-msg" style="display:none"></div>
+
+    <form id="auth-form" onsubmit="handleAuth(event)">
+      <div class="form-g">
+        <label>이메일</label>
+        <input type="email" id="auth-email" placeholder="you@example.com" required autocomplete="email">
+      </div>
+      <div class="form-g">
+        <label>비밀번호</label>
+        <input type="password" id="auth-pw" placeholder="비밀번호 (6자 이상)" required autocomplete="current-password" minlength="6">
+      </div>
+      <button type="submit" class="auth-submit" id="auth-submit-btn">로그인</button>
+    </form>
+
+    <div class="auth-divider"><span>소셜 로그인</span></div>
+    <button class="social-btn" onclick="signInWith('github')">
+      <i class="fab fa-github"></i> GitHub으로 계속하기
+    </button>
+    <button class="social-btn" onclick="signInWith('google')">
+      <i class="fab fa-google"></i> Google로 계속하기
+    </button>
+
+    <p class="modal-note">로그인하면 <a href="#" onclick="return false">이용약관</a> 및 <a href="#" onclick="return false">개인정보처리방침</a>에 동의하는 것으로 간주합니다.</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fg3">
+    <div class="fc3">
+      <h4>ABOUT</h4>
+      <p>Vibe Coding Manual은 현대 웹 개발자를 위한 종합 도구 가이드입니다. Claude, GitHub, Supabase, Vercel, VS Code의 사용법을 한 곳에서 확인하세요.</p>
+    </div>
+    <div class="fc3">
+      <h4>GUIDES</h4>
+      <ul>
+        <li><a href="#" onclick="switchTab('claude',null);return false">Claude 가이드</a></li>
+        <li><a href="#" onclick="switchTab('github',null);return false">GitHub 가이드</a></li>
+        <li><a href="#" onclick="switchTab('supabase',null);return false">Supabase 가이드</a></li>
+        <li><a href="#" onclick="switchTab('vercel',null);return false">Vercel 가이드</a></li>
+        <li><a href="#" onclick="switchTab('vscode',null);return false">VS Code 가이드</a></li>
+      </ul>
+    </div>
+    <div class="fc3">
+      <h4>LINKS</h4>
+      <ul>
+        <li><a href="https://claude.ai" target="_blank">Claude.ai</a></li>
+        <li><a href="https://github.com" target="_blank">GitHub</a></li>
+        <li><a href="https://supabase.com" target="_blank">Supabase</a></li>
+        <li><a href="https://vercel.com" target="_blank">Vercel</a></li>
+        <li><a href="https://code.visualstudio.com" target="_blank">VS Code</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bot">© 2026 Vibe Coding Manual. Built with Claude Code.</div>
+</footer>
+
+<script>
+// =========================================================
+// SUPABASE AUTH
+// =========================================================
+// Supabase 프로젝트 URL과 Anon Key를 아래에 직접 입력하거나
+// 로그인 모달의 설정 패널을 통해 입력할 수 있습니다.
+// Dashboard > Settings > API 에서 확인하세요.
+const SUPABASE_URL_DEFAULT = 'https://dvjojxdhadjkttfojmkd.supabase.co';
+const SUPABASE_KEY_DEFAULT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2am9qeGRoYWRqa3R0Zm9qbWtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NDAyMTgsImV4cCI6MjA5NDMxNjIxOH0.NbsJc8yr9n97tt_LfHy-n1kkVc8bPIRITmYKFEPUEqE';
+
+let sb = null;
+let authMode = 'login';
+
+function initSupabase(url, key) {
+  try {
+    sb = window.supabase.createClient(url, key);
+    sb.auth.onAuthStateChange((event, session) => {
+      if (session && session.user) {
+        renderUser(session.user);
+      } else {
+        renderGuest();
+      }
+    });
+    return true;
+  } catch(e) {
+    console.warn('Supabase init error:', e);
+    sb = null;
+    return false;
+  }
+}
+
+function loadConfig() {
+  const url = localStorage.getItem('sb_url') || SUPABASE_URL_DEFAULT;
+  const key = localStorage.getItem('sb_key') || SUPABASE_KEY_DEFAULT;
+  if (url && key) initSupabase(url, key);
+}
+
+function saveConfig() {
+  const url = document.getElementById('cfg-url').value.trim();
+  const key = document.getElementById('cfg-key').value.trim();
+  if (!url || !key) { showMsg('URL과 Key를 모두 입력해주세요.', 'error'); return; }
+  localStorage.setItem('sb_url', url);
+  localStorage.setItem('sb_key', key);
+  if (initSupabase(url, key)) {
+    document.getElementById('config-panel').style.display = 'none';
+    showMsg('Supabase 연결 성공! 이제 로그인할 수 있습니다.', 'success');
+  } else {
+    showMsg('연결에 실패했습니다. URL과 Key를 확인해주세요.', 'error');
+  }
+}
+
+function openModal() {
+  if (!sb) document.getElementById('config-panel').style.display = 'block';
+  else document.getElementById('config-panel').style.display = 'none';
+  clearMsg();
+  document.getElementById('auth-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('auth-email').focus(), 100);
+}
+
+function closeModal() {
+  document.getElementById('auth-modal').style.display = 'none';
+  document.body.style.overflow = '';
+  document.getElementById('auth-form').reset();
+  clearMsg();
+}
+
+function setAuthMode(mode) {
+  authMode = mode;
+  document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+  document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
+  document.getElementById('auth-submit-btn').textContent = mode === 'login' ? '로그인' : '회원가입';
+  document.getElementById('auth-pw').autocomplete = mode === 'login' ? 'current-password' : 'new-password';
+  clearMsg();
+}
+
+function showMsg(text, type) {
+  const el = document.getElementById('auth-msg');
+  el.className = 'auth-msg ' + type;
+  el.textContent = text;
+  el.style.display = 'block';
+}
+
+function clearMsg() {
+  const el = document.getElementById('auth-msg');
+  el.style.display = 'none';
+  el.textContent = '';
+}
+
+async function handleAuth(e) {
+  e.preventDefault();
+  if (!sb) { showMsg('먼저 Supabase를 설정해주세요.', 'error'); return; }
+
+  const email = document.getElementById('auth-email').value.trim();
+  const pw = document.getElementById('auth-pw').value;
+  const btn = document.getElementById('auth-submit-btn');
+  btn.disabled = true;
+  btn.textContent = '처리 중...';
+  clearMsg();
+
+  try {
+    if (authMode === 'login') {
+      const { error } = await sb.auth.signInWithPassword({ email, password: pw });
+      if (error) throw error;
+      closeModal();
+    } else {
+      const { error } = await sb.auth.signUp({ email, password: pw });
+      if (error) throw error;
+      showMsg('📧 가입 확인 이메일을 발송했습니다. 메일함을 확인해주세요.', 'success');
+      btn.disabled = false;
+      btn.textContent = '회원가입';
+      return;
+    }
+  } catch (err) {
+    const map = {
+      'Invalid login credentials': '이메일 또는 비밀번호가 올바르지 않습니다.',
+      'Email not confirmed': '이메일 인증이 필요합니다. 메일함을 확인하세요.',
+      'User already registered': '이미 가입된 이메일입니다. 로그인해주세요.',
+      'Password should be at least 6 characters': '비밀번호는 6자 이상이어야 합니다.',
+    };
+    showMsg(map[err.message] || err.message, 'error');
+  }
+  btn.disabled = false;
+  btn.textContent = authMode === 'login' ? '로그인' : '회원가입';
+}
+
+async function signInWith(provider) {
+  if (!sb) { showMsg('먼저 Supabase를 설정해주세요.', 'error'); return; }
+  const { error } = await sb.auth.signInWithOAuth({
+    provider,
+    options: { redirectTo: window.location.href }
+  });
+  if (error) showMsg(error.message, 'error');
+}
+
+async function doSignOut() {
+  if (!sb) return;
+  await sb.auth.signOut();
+}
+
+function renderUser(user) {
+  document.getElementById('login-btn').style.display = 'none';
+  const info = document.getElementById('user-info');
+  info.style.display = 'flex';
+  document.getElementById('user-email-text').textContent = user.email;
+  document.getElementById('user-avatar-letter').textContent = user.email[0].toUpperCase();
+}
+
+function renderGuest() {
+  document.getElementById('login-btn').style.display = 'block';
+  document.getElementById('user-info').style.display = 'none';
+}
+
+// Init on load
+loadConfig();
+
+// =========================================================
+// PAGE NAV
+// =========================================================
+let curTab = 'home';
+
+const firstPage = {
+  home: 'home-main',
+  claude: 'c-intro',
+  github: 'gh-intro',
+  supabase: 'sb-intro',
+  vercel: 'vc-intro',
+  vscode: 'vs-intro',
+  manual: 'm-start'
+};
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  if (btn) {
+    btn.classList.add('active');
+  } else {
+    document.querySelectorAll('.nav-tab').forEach(t => {
+      if (t.dataset.tab === tab) t.classList.add('active');
+    });
+  }
+
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-' + tab).classList.add('active');
+
+  document.querySelectorAll('[id^="sb-"]').forEach(m => m.style.display = 'none');
+  document.getElementById('sb-' + tab).style.display = 'block';
+
+  curTab = tab;
+  showPage(firstPage[tab]);
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+function showPage(pageId) {
+  const sec = document.getElementById('sec-' + curTab);
+  sec.querySelectorAll(':scope > div').forEach(d => d.style.display = 'none');
+  const target = document.getElementById(pageId);
+  if (target) target.style.display = 'block';
+
+  document.querySelectorAll('.sb-item').forEach(item => {
+    item.classList.remove('active');
+    const oc = item.getAttribute('onclick') || '';
+    if (oc.includes("'" + pageId + "'") || oc.includes('"' + pageId + '"')) {
+      item.classList.add('active');
+    }
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goHome() {
+  switchTab('home', document.querySelector('.nav-tab[data-tab="home"]'));
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+function copyCmd(btn) {
+  const code = btn.previousElementSibling.textContent.trim();
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = '복사됨!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = code;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = '복사됨!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function copyCB(btn) {
+  const pre = btn.parentElement.querySelector('pre');
+  const text = pre ? pre.textContent.trim() : '';
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '복사됨!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = '복사됨!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function toggleFaq(el) {
+  el.closest('.faq-item').classList.toggle('open');
+}
+
+// Init: hide all sidebar menus except home
+document.querySelectorAll('[id^="sb-"]').forEach(m => m.style.display = 'none');
+document.getElementById('sb-home').style.display = 'block';
+</script>
+</body>
+</html>
